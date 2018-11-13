@@ -12,7 +12,7 @@ local fonts = {dxCreateFont("roboto.ttf", 17), dxCreateFont("roboto.ttf", 12)};
 
 local moneyText = "";
 local buttonText = "";
-local input = {{"", false, ""}, {"", false, "Játékos neve vagy ID-je"}};
+local input = {{"", false, ""}, {"", false, "Játékos neve"}};
 
 local options = {
     {"Kifizetés", true},
@@ -68,33 +68,33 @@ function processTransaction()
     for i = 1, 3 do
         if options[i][2] then
             type = i;
-            return;
+            break;
         end
     end
     
     if (type == 3) then
-        target, targetName = exports.admin:getPlayerFromID(input[2][1]);
+        target = getPlayerFromPartialName(input[2][1]);
         if not target then
-            exports.infobox:outputInfoBox("Nem található játékos ilyen névvel vagy ID-vel!", "error");
+            outputChatBox("Nem található játékos ilyen névvel vagy ID-vel!", 255, 0, 0, true);
             return;
         elseif target == localPlayer then
-            exports.infobox:outputInfoBox("Magadnak nem utalhatsz át pénzt!", "error");
+            outputChatBox("Magadnak nem utalhatsz át pénzt!", 255, 0, 0, true);
             return;
         end
     elseif input[1][1] == "" then
-        exports.infobox:outputInfoBox("A beírt összegnek nagyobb kell lenni 0-nál!", "error");
+        outputChatBox("A beírt összegnek nagyobb kell lenni 0-nál!", 255, 0, 0, true);
         return;
     end
            
-    triggerServerEvent("server->processTransaction", resourceRoot, type, tonumber(input[1][1]), {target, targetName});
+    triggerServerEvent("server->processTransaction", resourceRoot, type, tonumber(input[1][1]), {target, getPlayerName(target)});
 end
 
 addEventHandler("onClientElementDataChange", getRootElement(), function(theKey)
     if bankPanelShowing then
         if theKey == MONEY_ELEMENTDATA then
-            playerMoney = getElementData(localPlayer, theKey);
+            playerMoney = tonumber(getElementData(localPlayer, theKey));
         elseif theKey == BANKMONEY_ELEMENTDATA then
-            bankMoney = getElementData(localPlayer, theKey);
+            bankMoney = tonumber(getElementData(localPlayer, theKey));
         end
     end
 end);
@@ -103,8 +103,8 @@ addEventHandler("onClientClick", getRootElement(), function(button, state, _, _,
     if state == "down" then
         if button == "right" then
             if clickedElement and getElementType(clickedElement) == "ped" and getElementData(clickedElement, "bankped") then
-                playerMoney = getElementData(localPlayer, MONEY_ELEMENTDATA);
-                bankMoney = getElementData(localPlayer, BANKMONEY_ELEMENTDATA);
+                playerMoney = tonumber(getElementData(localPlayer, MONEY_ELEMENTDATA)) or 0;
+                bankMoney = tonumber(getElementData(localPlayer, BANKMONEY_ELEMENTDATA)) or 0;
                 options[1][2], options[2][2], options[3][2] = true, false, false;
                 input[1][1], input[2][1] = "", "";
                 bankPanelShowing = true;
@@ -117,8 +117,6 @@ addEventHandler("onClientClick", getRootElement(), function(button, state, _, _,
                 input[2][2] = true;
             elseif options[3][2] and isCursorHover(panelPos[1] + 310, panelPos[2] + 205, 150, 40) then
                 input[1][2] = true;
-            elseif isCursorHover(panelPos[1] + 170, panelPos[2] + 205, 150, 40) then
-                 input[1][2] = true;
             elseif isCursorHover(panelPos[1] + 155, panelPos[2] + 290, 175, 35) then
                 processTransaction();
             else
@@ -212,6 +210,18 @@ function dxDrawRoundedRectangle(x, y, rx, ry, color, radius)
         dxDrawCircle(x + rx, y, radius, 270, 360, color, color, 7);
         dxDrawCircle(x + rx, y + ry, radius, 0, 90, color, color, 7);
         dxDrawCircle(x, y + ry, radius, 90, 180, color, color, 7);
+    end
+end
+
+function getPlayerFromPartialName(name)
+    local name = name and name:gsub("#%x%x%x%x%x%x", ""):lower() or nil;
+    if name then
+        for _, player in ipairs(getElementsByType("player")) do
+            local name_ = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower();
+            if name_:find(name, 1, true) then
+                return player;
+            end
+        end
     end
 end
 
