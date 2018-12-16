@@ -80,13 +80,19 @@ function processTransaction()
         elseif target == localPlayer then
             outputChatBox("Magadnak nem utalhatsz át pénzt!", 255, 0, 0, true);
             return;
+        else
+            targetName = getPlayerName(targetName);
         end
-    elseif input[1][1] == "" then
+    else
+        target, targetName = false, false;
+    end
+    
+    if input[1][1] == "" then
         outputChatBox("A beírt összegnek nagyobb kell lenni 0-nál!", 255, 0, 0, true);
         return;
     end
            
-    triggerServerEvent("server->processTransaction", resourceRoot, type, tonumber(input[1][1]), {target, getPlayerName(target)});
+    triggerServerEvent("server->processTransaction", resourceRoot, type, tonumber(input[1][1]), {target, targetName});
 end
 
 addEventHandler("onClientElementDataChange", getRootElement(), function(theKey)
@@ -216,7 +222,7 @@ function dxDrawRoundedRectangle(x, y, rx, ry, color, radius)
 end
 
 function getPlayerFromPartialName(name)
-    local name = name and name:gsub("#%x%x%x%x%x%x", ""):lower() or nil;
+    local name = (name and name ~= "") and name:gsub("#%x%x%x%x%x%x", ""):lower() or nil;
     if name then
         for _, player in ipairs(getElementsByType("player")) do
             local name_ = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower();
