@@ -117,7 +117,7 @@ addEventHandler("onClientClick", getRootElement(), function(button, state, _, _,
                 input[2][2] = true;
             elseif options[3][2] and isCursorHover(panelPos[1] + 310, panelPos[2] + 205, 150, 40) then
                 input[1][2] = true;
-            elseif (options[1][2] or options[1][2]) and isCursorHover(panelPos[1] + 170, panelPos[2] + 205, 150, 40) then
+            elseif (options[1][2] or options[2][2]) and isCursorHover(panelPos[1] + 170, panelPos[2] + 205, 150, 40) then
                 input[1][2] = true;
             elseif isCursorHover(panelPos[1] + 155, panelPos[2] + 290, 175, 35) then
                 processTransaction();
