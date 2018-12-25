@@ -6,9 +6,16 @@ local width, height = 500, 350;
 local panelPos = {(sx/2) - (width/2), (sy/2) - (height/2)};
 local bankPanelShowing = false;
 
-local tickCount = getTickCount();
-
-local fonts = {dxCreateFont("roboto.ttf", 17), dxCreateFont("roboto.ttf", 12)};
+addEventHandler("onClientResourceStart", resourceRoot, function()
+    tickCount = getTickCount();
+    fonts = {dxCreateFont("files/roboto.ttf", 17), dxCreateFont("files/roboto.ttf", 12)};
+    if fonts[1] and fonts[2] then
+        print("Fonts created successfully in "..getTickCount()-tickCount.."ms!");
+    else
+        assert("Failed creating custom fonts, using default fonts.");
+        fonts = {"default-bold", "default-bold"};
+    end
+end);
 
 local moneyText = "";
 local buttonText = "";
@@ -75,10 +82,10 @@ function processTransaction()
     if (type == 3) then
         target = getPlayerFromPartialName(input[2][1]);
         if not target then
-            outputChatBox("Nem található játékos ilyen névvel vagy ID-vel!", 255, 0, 0, true);
+            exports.infobox:outputInfoBox("Nem található játékos ilyen névvel vagy ID-vel!", "error");
             return;
         elseif target == localPlayer then
-            outputChatBox("Magadnak nem utalhatsz át pénzt!", 255, 0, 0, true);
+            exports.infobox:outputInfoBox("Magadnak nem utalhatsz át pénzt!", "error");
             return;
         else
             targetName = getPlayerName(targetName);
@@ -88,7 +95,7 @@ function processTransaction()
     end
     
     if input[1][1] == "" then
-        outputChatBox("A beírt összegnek nagyobb kell lenni 0-nál!", 255, 0, 0, true);
+        exports.infobox:outputInfoBox("A beírt összegnek nagyobb kell lenni 0-nál!", "error");
         return;
     end
            
