@@ -82,10 +82,10 @@ function processTransaction()
     if (type == 3) then
         target = getPlayerFromPartialName(input[2][1]);
         if not target then
-            exports.infobox:outputInfoBox("Nem található játékos ilyen névvel vagy ID-vel!", "error");
+            outputChatBox("Nem található játékos ilyen névvel vagy ID-vel!");
             return;
         elseif target == localPlayer then
-            exports.infobox:outputInfoBox("Magadnak nem utalhatsz át pénzt!", "error");
+            outputChatBox("Magadnak nem utalhatsz át pénzt!");
             return;
         else
             targetName = getPlayerName(targetName);
@@ -95,7 +95,7 @@ function processTransaction()
     end
     
     if input[1][1] == "" then
-        exports.infobox:outputInfoBox("A beírt összegnek nagyobb kell lenni 0-nál!", "error");
+        outputChatBox("A beírt összegnek nagyobb kell lenni 0-nál!");
         return;
     end
            
